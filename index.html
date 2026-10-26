@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="is">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sagnaturninn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="sky"><div class="moon"></div></div>
+<button id="muteBtn" class="icon-btn" title="Hljóð af/á">🔊</button>
+
+<main id="app">
+  <!-- HVER SPILAR? -->
+  <section id="who" class="screen active">
+    <div class="logo">🏰</div>
+    <h1>Sagnaturninn</h1>
+    <p class="tagline">Hver ætlar að klifra upp turninn í dag?</p>
+    <div id="whoList" class="who-list"></div>
+  </section>
+
+  <!-- VALMYND -->
+  <section id="menu" class="screen">
+    <div class="logo">🏰</div>
+    <h1>Sagnaturninn</h1>
+    <p class="tagline">Klifraðu upp galdraturninn, sigraðu skrímslin með <b>óreglulegum sögnum</b> og felldu Sagnadrekann á toppnum!</p>
+    <p class="hello" id="hello"></p>
+    <div class="stats" id="menuStats"></div>
+    <div class="menu-buttons">
+      <button class="big-btn primary" data-go="battle">⚔️ Byrja ævintýrið</button>
+      <button class="big-btn" data-go="cards">🃏 Æfingaspjöld</button>
+      <button class="big-btn" data-go="book">📖 Sagnabókin</button>
+      <button class="small-btn" data-go="who">🔄 Skipta um leikmann</button>
+    </div>
+    <div class="howto">
+      <h3>Svona virkar þetta</h3>
+      <p>🧙 Þú ert galdramaður. Hvert skrímsli spyr þig um sögn. Rétt svar = eldbolti! 🔥</p>
+      <p>❤️ Rangt svar kostar hjarta og skrímslið sleppur&nbsp;– en það kemur aftur svo þú getir lært sögnina.</p>
+      <p>🐉 Á toppnum bíður drekinn. Þú þarft að kunna <b>allar þrjár myndirnar</b> til að sigra hann.</p>
+    </div>
+  </section>
+
+  <!-- BARDAGI -->
+  <section id="battle" class="screen">
+    <div class="hud">
+      <div id="hearts"></div>
+      <div id="floorLabel"></div>
+      <div id="xpLabel"></div>
+    </div>
+    <div id="path"></div>
+    <div id="arena">
+      <div class="torch left">🕯️</div><div class="torch right">🕯️</div>
+      <div id="wizard" class="fighter">🧙</div>
+      <div id="monsterWrap">
+        <div id="monsterName"></div>
+        <div id="bossHp"></div>
+        <div id="monster" class="fighter"></div>
+      </div>
+      <div id="combo"></div>
+    </div>
+    <div id="questionBox">
+      <div id="qPrompt"></div>
+      <div id="qArea"></div>
+      <div id="feedback"></div>
+    </div>
+    <button class="small-btn" data-go="menu">🏠 Hætta</button>
+  </section>
+
+  <!-- LOK -->
+  <section id="end" class="screen"><div id="endContent"></div></section>
+
+  <!-- SPJÖLD -->
+  <section id="cards" class="screen">
+    <h2>🃏 Æfingaspjöld</h2>
+    <p class="sub" id="cardsLeft"></p>
+    <div id="cardStage"></div>
+    <div id="cardControls" class="card-controls" hidden>
+      <button class="big-btn" id="againBtn">🔁 Æfa meira</button>
+      <button class="big-btn primary" id="knewBtn">👍 Kunni það!</button>
+    </div>
+    <button class="small-btn" data-go="menu">🏠 Valmynd</button>
+  </section>
+
+  <!-- SAGNABÓKIN -->
+  <section id="book" class="screen">
+    <h2>📖 Sagnabókin</h2>
+    <p class="sub">Smelltu á 🔊 til að heyra framburðinn. Stjörnurnar sýna hversu vel þú kannt hverja sögn.</p>
+    <div class="table-wrap"><table id="bookTable"></table></div>
+    <div class="menu-buttons">
+      <button class="big-btn primary" data-go="battle">⚔️ Í turninn!</button>
+      <button class="small-btn" data-go="menu">🏠 Valmynd</button>
+      <button class="small-btn danger" id="resetBtn">🗑️ Byrja upp á nýtt</button>
+    </div>
+  </section>
+</main>
+
+<script src="verbs.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

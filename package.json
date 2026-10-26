@@ -1,0 +1,9 @@
+{
+  "name": "sagnaturninn",
+  "version": "1.0.0",
+  "description": "Leikur til að læra óreglulegar sagnir í ensku",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes http-server -p 8080 -c-1 ."
+  }
+}
