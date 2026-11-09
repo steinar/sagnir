@@ -260,3 +260,21 @@ tbody tr:hover { background: rgba(255,255,255,.06); }
 .who-card small { color: var(--muted); font-size: .95rem; }
 .hello { text-align: center; font-size: 1.3rem; margin: 0 0 6px; }
 .hello b { color: var(--gold); }
+
+/* ---------- VIKUVAL ---------- */
+.week-picker { max-width: 640px; margin: 6px auto 4px; text-align: center; }
+.week-label { color: var(--muted); margin-bottom: 8px; }
+.week-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.week-chip { min-width: 108px; padding: 8px 10px; border-radius: 14px; color: var(--text); display: flex; flex-direction: column; gap: 1px;
+  background: var(--panel); border: 2px solid var(--panel-border); box-shadow: 0 3px 0 rgba(0,0,0,.3); transition: transform .1s, border-color .15s; }
+.week-chip:hover { border-color: rgba(255,255,255,.45); }
+.week-chip:active { transform: translateY(2px); }
+.week-chip b { font-size: 1.05rem; }
+.week-chip small { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+.week-chip.done { border-color: rgba(74,222,128,.6); }
+.week-chip.sel { background: linear-gradient(135deg, var(--accent), var(--accent2)); border-color: var(--gold); }
+.week-chip.sel small { color: #fff; }
+.review-btn { margin-top: 10px; padding: 8px 16px; border-radius: 12px; font-size: 1rem; color: var(--text);
+  background: transparent; border: 2px dashed var(--panel-border); }
+.review-btn.on { border-style: solid; border-color: var(--gold); background: rgba(255,211,77,.15); }
+@media (max-width: 520px) { .week-chip { min-width: 0; flex: 1 1 30%; } }

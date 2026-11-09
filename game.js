@@ -3,8 +3,16 @@
 
 // ---------- Gögn og hjálparföll ----------
 const asList = x => Array.isArray(x) ? x : [x];
-const PLAYERS = window.PLAYERS || { styrmir: { name: 'Styrmir', hero: '🧙', verbs: window.VERBS || [] } };
+const ALL = new Map((window.ALL_VERBS || []).map(v => [v.inf, v]));
+const PLAYERS = window.PLAYERS || {};
+// Eldra snið (einn listi á leikmann) breytist í eina viku
+for (const p of Object.values(PLAYERS)) {
+  if (!p.weeks && p.verbs) { p.verbs.forEach(v => ALL.has(v.inf) || ALL.set(v.inf, v)); p.weeks = [p.verbs.map(v => v.inf)]; }
+  p.weeks = (p.weeks || []).map(w => w.filter(inf => ALL.has(inf) || (console.warn('Sögn vantar í ALL_VERBS:', inf), false)));
+  p.unit = p.unit || 'Vika';
+}
 const prepVerbs = list => list.map(v => ({ ...v, id: v.inf, past: asList(v.past), pp: asList(v.pp) }));
+const weekRange = w => w.length ? `${w[0]} – ${w[w.length - 1]}` : '';
 let playerId = null, VERBS = [];
 const FORM_NAME = { inf: 'Infinitive', past: 'Past Simple', pp: 'Past Participle' };
 const FORM_IS = { past: 'þátíð', pp: 'lýsingarhætti þátíðar' };
@@ -36,7 +44,7 @@ function lev(a, b) {
 const STORE_KEY = 'sagnaturninn-v1';
 const storeGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
 const storeSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
-const blankSave = () => ({ xp: 0, best: 0, wins: 0, m: {} });
+const blankSave = () => ({ xp: 0, best: 0, wins: 0, m: {}, week: null, review: false });
 let save = blankSave();
 let muted = !!storeGet(STORE_KEY + '-muted');
 // Vistun frá því áður en leikmenn komu til tilheyrir Styrmi
@@ -48,9 +56,17 @@ const persist = () => { if (playerId) storeSet(STORE_KEY + '-' + playerId, save)
 function loadPlayer(id) {
   playerId = id;
   const p = PLAYERS[id];
-  VERBS = prepVerbs(p.verbs);
   save = Object.assign(blankSave(), storeGet(STORE_KEY + '-' + id) || {});
+  if (save.week == null || save.week >= p.weeks.length) save.week = Math.min(p.weeks.length, Math.max(1, p.current || 1)) - 1;
   $('#wizard').textContent = p.hero || '🧙';
+  applyWeek();
+}
+// Velur sagnirnar fyrir valda viku (eða allar vikur fram að henni í upprifjun)
+function applyWeek() {
+  const p = PLAYERS[playerId];
+  if (save.week === 0) save.review = false;
+  const infs = save.review ? [...new Set(p.weeks.slice(0, save.week + 1).flat())] : p.weeks[save.week];
+  VERBS = prepVerbs(infs.map(inf => ALL.get(inf)));
 }
 const mastery = id => save.m[id] || (save.m[id] = { past: 0, pp: 0 });
 const stars = id => { const m = mastery(id); return Math.min(3, Math.floor((m.past + m.pp) / 3)); };
@@ -110,6 +126,9 @@ document.addEventListener('click', e => {
   if (s) { e.preventDefault(); e.stopPropagation(); speak(s.dataset.say, true); return; }
   const pl = e.target.closest('[data-player]');
   if (pl) { sfx.click(); loadPlayer(pl.dataset.player); renderMenu(); return; }
+  const wk = e.target.closest('[data-week]');
+  if (wk) { sfx.click(); save.week = +wk.dataset.week; save.review = false; persist(); applyWeek(); renderMenu(); return; }
+  if (e.target.closest('[data-review]')) { sfx.click(); save.review = !save.review; persist(); applyWeek(); renderMenu(); return; }
   const g = e.target.closest('[data-go]');
   if (g) { sfx.click(); go(g.dataset.go); }
 });
@@ -117,15 +136,28 @@ document.addEventListener('click', e => {
 function renderWho() {
   $('#whoList').innerHTML = Object.entries(PLAYERS).map(([id, p]) => {
     const st = storeGet(STORE_KEY + '-' + id) || {};
+    const wi = st.week != null && st.week < p.weeks.length ? st.week : Math.max(1, p.current || 1) - 1;
     return `<button class="who-card" data-player="${esc(id)}"><span class="who-hero">${p.hero || '🧙'}</span>` +
-      `<b>${esc(p.name)}</b><small>${p.verbs.length} sagnir · ${st.xp || 0} XP · 🐉 ${st.wins || 0}</small></button>`;
+      `<b>${esc(p.name)}</b><small>${esc(p.unit)} ${wi + 1} · ${st.xp || 0} XP · 🐉 ${st.wins || 0}</small></button>`;
   }).join('');
   showScreen('who');
 }
 
 function renderMenu() {
   const p = PLAYERS[playerId];
-  $('#hello').innerHTML = `Hæ <b>${esc(p.name)}</b>! ${p.hero || '🧙'} Í dag lærir þú <b>${VERBS.length} sagnir</b>.`;
+  const w = save.week, unit = esc(p.unit);
+  $('#hello').innerHTML = save.review
+    ? `Hæ <b>${esc(p.name)}</b>! ${p.hero || '🧙'} Upprifjun: <b>${unit} 1–${w + 1}</b> · ${VERBS.length} sagnir`
+    : `Hæ <b>${esc(p.name)}</b>! ${p.hero || '🧙'} ${unit} ${w + 1}: <b>${esc(weekRange(p.weeks[w]))}</b> · ${VERBS.length} sagnir`;
+  $('#weekPicker').innerHTML =
+    `<div class="week-label">Veldu ${p.unit === 'Próf' ? 'próf' : 'viku'}:</div><div class="week-chips">` +
+    p.weeks.map((wk, i) => {
+      const full = wk.filter(inf => stars(inf) === 3).length;
+      const done = full === wk.length ? ' done' : '';
+      return `<button class="week-chip${i === w ? ' sel' : ''}${done}" data-week="${i}">` +
+        `<b>${unit} ${i + 1}</b><small>${esc(weekRange(wk))}</small><small>⭐ ${full}/${wk.length}</small></button>`;
+    }).join('') + '</div>' +
+    (w > 0 ? `<button class="review-btn${save.review ? ' on' : ''}" data-review="1">🔁 Upprifjun: ${unit} 1–${w + 1} ${save.review ? '✓' : ''}</button>` : '');
   const mastered = VERBS.filter(v => stars(v.id) === 3).length;
   $('#menuStats').innerHTML =
     `<div class="stat"><b>${save.xp}</b><span>XP samtals</span></div>` +

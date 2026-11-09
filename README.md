@@ -17,13 +17,24 @@ Leikurinn man hvaða sagnir barnið kann (í vafranum) og spyr oftar um þær se
 Svörin eru lesin upp á ensku – hægt að slökkva á hljóði með 🔊 takkanum efst í horninu.
 Lyklaborð: 1–4 velur valmöguleika, Enter staðfestir, bil snýr spjaldi.
 
-## Leikmenn
-Í upphafi er valið hvort **Styrmir** 🧙 eða **Garri** 🧝 spilar. Hvor um sig hefur sinn eigin sagnalista
-og sína eigin framvindu (XP, stjörnur og sigra).
+## Leikmenn og vikur
+Í upphafi er valið hvort **Styrmir** 🧙 eða **Garri** 🧝 spilar. Svo er valið próf/vika:
 
-## Nýjar sagnir næsta dag
-Opnaðu **verbs.js** og bættu línu í lista viðkomandi (`STYRMIR_VERBS` eða `GARRI_VERBS`).
-Nýjum leikmanni er bætt við neðst í skránni undir `window.PLAYERS`.
+- **Styrmir**: 15 sagnir í hverju prófi (Próf 1–8), eins og sagnorðaprófin í skólanum.
+- **Garri**: stærri skammtar (Vika 1–4), um eina blaðsíðu úr bókinni í einu.
+- **🔁 Upprifjun** blandar saman öllum vikum fram að valinni viku.
+
+Hvor leikmaður hefur sína eigin framvindu (XP, stjörnur og sigra), og leikurinn man hvaða viku hvor valdi síðast.
+
+## Að laga eða bæta við sögnum
+Allt er í **verbs.js**:
+
+1. `ALL_VERBS` – allar sagnirnar í stafrófsröð, með þýðingu, dæmasetningum og röngum svörum.
+2. `PLAYERS` – vikur hvors leikmanns sem listar af nafnháttum, t.d.
+   `["hide", "hit", "hold", ...]`. Vikur merktar `ágiskun` eru giskaðar út frá röðinni í bókinni.
+   Ef blaðið frá skólanum er öðruvísi er nóg að laga listann.
+
+Ný sögn er sett inn í `ALL_VERBS` á réttan stað í stafrófinu:
 
 ```js
 { inf: "fly", past: "flew", pp: "flown", is: "að fljúga",
